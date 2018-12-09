@@ -1,0 +1,61 @@
+<!DOCTYPE html> <!-- html 5 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>New document</title>
+    <script src="onStart.js"></script>
+    <script src="treeGeneration.js"></script>
+    <script src="tree.js"></script>
+    <script src="lexer.js"></script>
+    <script src="parser.js"></script>
+    <script src="getData.js"></script>
+</head>
+<body>
+    <pre><code class="language-js">
+        MODULE Example;
+        VAR 	i:INTEGER;
+        ch:CHAR;
+            PROCEDURE Sqr(n:INTEGER ):INTEGER
+        VAR temp, acc:INTEGER;
+            BEGIN
+                temp := n;
+                acc := 0;
+                WHILE temp>0 DO
+                    acc:= acc + n;
+                    DEC temp;
+                END;
+            END Sqr;
+        BEGIN
+            i := 1;
+            (*i := Sqr(i);*)
+        END Example.
+    </code></pre>
+
+    <a id="rand"></a>
+    <p>
+        <input class="button" type="button" value="run" onclick="run('run_out_id');" style="">
+        <b  class="green" id="run_out2_id" style="float:right; margin-right:1em; margin-top:-1em;"></b><br>
+        <center>
+            <div id="run_out_id" ></div>
+            <script>
+                run('run_out_id');
+                function run(out_id)
+                {
+                    var t = "main(object(thing,being(creature(animal,bird,fish,insect),plant),part,group,stuff,space),concept(action,time,attr,mental,sound";
+
+                    drawTree(t);
+                    function drawTree(t)
+                    {
+                        document.getElementById(out_id).innerHTML = Tree.getSVG(Tree.parse(t));
+                    }
+
+                }
+            </script>
+        </center>
+    </p>
+    
+
+</body>
+</html>
