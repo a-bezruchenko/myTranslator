@@ -59,13 +59,12 @@
                 {
                     var test = "main(object(thing,being(creature(animal,bird,fish,insect),plant),part,group,stuff,space),concept(action,time,attr,mental,sound";
                     
-                    var tr = parser(lexer(document.querySelector('code.language-js'),"lex_table.json")[0],"productionsTable.json", false);
-
-                    drawTree(getStringTree(tr));
+                    var tr = getStringTree(parser(lexer(document.querySelector('code.language-js'),"lex_table.json")[0],"productionsTable.json", false))
+                    drawTree(tr);
 
                     function drawTree(t)
                     {
-                        document.getElementById('run_out_id').innerHTML = Tree.getSVG(Tree.parse(t));
+                        document.getElementById('run_out_id').innerHTML = rewriteDiagonalLines(Tree.getSVG(Tree.parse(t)));
                     }
 
                 }
