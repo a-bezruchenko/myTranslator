@@ -82,7 +82,9 @@ function getStringTree(tree)
             else if (node.type == '(')
                 text += '❲'; // технически, это не скобка, так что парсер на основе скобок работает корректно
             else if (node.type == ')')
-                text += '❳';
+                text += '❳'; 
+            else if (node.type == ',')
+                text += '،'
             else if (node.type == "id" || node.type == "const")
                 text += node.body[1];
             else if (typeof(node.body)=="string")
