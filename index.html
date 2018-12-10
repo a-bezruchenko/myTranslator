@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>New document</title>
     <script src="onStart.js"></script>
-    <script src="treeGeneration.js"></script>
+    <script src="utilitary.js"></script>
     <script src="tree.js"></script>
     <script src="lexer.js"></script>
     <script src="parser.js"></script>
@@ -32,23 +32,33 @@
             (*i := Sqr(i);*)
         END Example.
     </code></pre>
-
-    <a id="rand"></a>
+    <a href=#>Скачать svg-файл</a>
     <p>
-        <input class="button" type="button" value="run" onclick="run('run_out_id');" style="">
+        <input class="button" type="button" value="Перерисовать дерево" onclick="run();">
         <b  class="green" id="run_out2_id" style="float:right; margin-right:1em; margin-top:-1em;"></b><br>
         <center>
             <div id="run_out_id" ></div>
+            
             <script>
-                run('run_out_id');
-                function run(out_id)
+                document.getElementsByTagName('a')[0].onclick = function() {
+                    var text = document.getElementById('run_out_id').innerHTML;
+                    var csvData = 'data:application/txt;charset=utf-8,' + encodeURIComponent(text);
+                    this.href = csvData;
+                    this.target = '_blank';
+                    this.download = 'tree.svg';
+                }
+                run();
+                function run()
                 {
-                    var t = "main(object(thing,being(creature(animal,bird,fish,insect),plant),part,group,stuff,space),concept(action,time,attr,mental,sound";
+                    var test = "main(object(thing,being(creature(animal,bird,fish,insect),plant),part,group,stuff,space),concept(action,time,attr,mental,sound";
+                    
+                    var tr = parser(lexer(document.querySelector('code.language-js'),"lex_table.json")[0],"productionsTable.json", false);
 
-                    drawTree(t);
+                    drawTree(getStringTree(tr));
+
                     function drawTree(t)
                     {
-                        document.getElementById(out_id).innerHTML = Tree.getSVG(Tree.parse(t));
+                        document.getElementById('run_out_id').innerHTML = Tree.getSVG(Tree.parse(t));
                     }
 
                 }

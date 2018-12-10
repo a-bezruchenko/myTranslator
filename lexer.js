@@ -1,3 +1,10 @@
+/***************************************************************************************
+По элементу страницы, содержащему код, выдать массив лексем по данной грамматике
+
+elementWithCode – элемент страницы, содержащий код
+
+configURL – адрес, по которому брать файл с грамматикой
+*/
 function lexer(elementWithCode, configURL) 
 {
     var codeText = elementWithCode.textContent;
@@ -93,11 +100,13 @@ function lexer(elementWithCode, configURL)
             }
         }
     }
-    if (ErrorList.length == 0)
-        return [tokenList, arrayOfIdent, arrayOfConst];
-    else
+    if (ErrorList.length != 0)
     {
         console.log(ErrorList);
         return "Found errors.";
+    }
+    else
+    {
+        return [tokenList, arrayOfIdent, arrayOfConst];
     }
 }

@@ -2,16 +2,26 @@
 // доделать case
 // сделать возможность вызывать функции и писать выражения типа i := fun(i);
 
+/****************************************************************************************
+Построить синтаксическое дерево по массиву токенов и грамматике
+arrayOfTokens - исходная строка
 
-function parser(arrayOfTokens, configURL)
+configURL - адрес, по которому брать файл с грамматикой
+
+PRINT_PROCESS_OF_DERIVATION – печатать ли в консоль процесс вывода цепочки
+
+OUTPUT_DERIVATION – если установлено, то на выходе будет массив из дерева и применённых правил
+
+PRINT_TERMINALS – при печати вывода цепочки печатать ли «вывод» терминалов
+
+PRINT_EPSILONS – у нетерминалов, выводящихся «в никуда», ставит эпсилон в правой части правила
+*/
+function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OUTPUT_DERIVATION = false ,PRINT_TERMINALS = false, PRINT_EPSILONS = false)
 {
     var config = getDataFromServer(configURL);
     var start = ["@программа@"];
     var currentIndex = 0;
     var output = [];
-
-    const PRINT_PROCESS_OF_DERIVATION = true; // печатать ли процесс вывода
-    const PRINT_TERMINALS = false; // если равен false, то вывод терминалов не печатается
 
     function startRecursiveParse(stack) {
         var currentStackSymbol;
@@ -27,10 +37,10 @@ function parser(arrayOfTokens, configURL)
                     currentToken[0] == 'ident' && currentStackSymbol == 'id'||
                     currentToken[0].match(/.*?_const/) && currentStackSymbol == 'const')
                     {
-                        if (PRINT_PROCESS_OF_DERIVATION && PRINT_TERMINALS)
+                        if (PRINT_TERMINALS)
                         {
                             if (currentToken != currentStackSymbol)
-                                output.push(currentStackSymbol + " -> " + currentToken[1]);
+                                output.push(currentStackSymbol + " → " + currentToken[1]);
                             else 
                                 output.push(currentToken);
                         }
@@ -59,9 +69,10 @@ function parser(arrayOfTokens, configURL)
                     if (config[currentStackSymbol][currentToken] !== undefined) 
                     {
                         var production = config[currentStackSymbol][currentToken];
-
-                        if (PRINT_PROCESS_OF_DERIVATION)
-                            output.push(currentStackSymbol + " -> " + production.join(" "));
+                        if (production.length==0 && PRINT_EPSILONS)
+                            output.push(currentStackSymbol + " → ε");
+                        else
+                            output.push(currentStackSymbol + " → " + production.join(" "));
 
                         if (typeof(production) == 'object') 
                         {
@@ -85,13 +96,10 @@ function parser(arrayOfTokens, configURL)
                     else if (config[currentStackSymbol]["EMPTY PRODUCTIONS"] !== undefined && 
                             config[currentStackSymbol]["EMPTY PRODUCTIONS"].indexOf(currentToken)!=-1)
                     {
-                        if (PRINT_PROCESS_OF_DERIVATION)
-                            output.push(currentStackSymbol + " ->   ");
-/*
-                        var newStack = [];
-
-                        localAst.push({"type" : currentStackSymbol,
-                            "body" : startRecursiveParse(newStack)});*/
+                        if (PRINT_EPSILONS)
+                            output.push(currentStackSymbol + " → ε");
+                        else
+                            output.push(currentStackSymbol + " →   ");
                     }
                     else {                
                         console.log("Ошибка: для сочетания терминала и нетерминала не задано правило: " + currentToken + " " + currentStackSymbol);
@@ -118,5 +126,8 @@ function parser(arrayOfTokens, configURL)
     }
     if (PRINT_PROCESS_OF_DERIVATION)
         console.log(output.join("\n"));
+
+    if (OUTPUT_DERIVATION)
+        return ([ast, output.join("\n")])
     return ast;
 }

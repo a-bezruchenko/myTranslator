@@ -1,3 +1,8 @@
+/***************************************************************************************
+Получить JSON-файл по указанному адресу
+
+parseJSON – парсить ли файл
+*/
 function getDataFromServer(url, parseJSON = true) 
 {
     var xhr = new XMLHttpRequest();
