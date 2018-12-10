@@ -142,7 +142,9 @@ function getTreeAsText()
 */
 function rewriteDiagonalLines(tree)
 {
-    var linesArray = tree.match(/<line x1="[0-9]+" y1="[0-9]+" x2="[0-9]+" y2="[0-9]+" stroke="black" style="stroke-width:1px;"\/>/);
+    //var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+" .*\/>/);
+    //match(/<line x1="(\d+)" y1="(\d+)" x2="(\d+)" y2="(\d+)".*?\><\/line>/)
+    /*var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+".*?\><\/line>/g)
     for (line in linesArray)
     {
         if (line != null)
@@ -159,10 +161,37 @@ function rewriteDiagonalLines(tree)
                     // заменить текущую диагональ на две вертикали и одну горизонталь
                     var y3 = (y1+y2)/2;
                     var newLine = 
+                    '<line x1="'+ x1 +'" y1="'+ y1 +'" x2="'+ x1 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/></line>'+
+                    '<line x1="'+ x2 +'" y1="'+ y2 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/></line>'+
+                    '<line x1="'+ x1 +'" y1="'+ y3 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/></line>';
+                    tree.replace(line, newLine);
+                }
+            }
+        }
+    }*/
+    tree = tree.slice();
+    var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+".*?\/\>/g)
+    for (line in linesArray)
+    {
+        if (linesArray[line] != null)
+        {
+            var coordinates = linesArray[line].match(/"([0-9]+)"/g)
+            if (coordinates != null)
+            {
+
+                var x1 = +(coordinates[0].replace(/"/g, ''));
+                var y1 = +(coordinates[1].replace(/"/g, ''));
+                var x2 = +(coordinates[2].replace(/"/g, ''));
+                var y2 = +(coordinates[3].replace(/"/g, ''));
+                if (x1 != x2)
+                {
+                    // заменить текущую диагональ на две вертикали и одну горизонталь
+                    var y3 = (y1+y2)/2;
+                    var newLine = 
                     '<line x1="'+ x1 +'" y1="'+ y1 +'" x2="'+ x1 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>'+
                     '<line x1="'+ x2 +'" y1="'+ y2 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>'+
-                    '<line x1="'+ x1 +'" y1="'+ y3 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>'
-                    tree.replace(line, newLine)
+                    '<line x1="'+ x1 +'" y1="'+ y3 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>';
+                    tree = tree.replace(linesArray[line], newLine);
                 }
             }
         }
