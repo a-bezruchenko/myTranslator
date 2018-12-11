@@ -45,7 +45,7 @@
             END
         END Example.
     </code></pre>
-    <a href=#>Скачать svg-файл</a>
+    <a href=#>Скачать html-файл с деревом</a>
     <p>
         <input class="button" type="button" value="Перерисовать дерево" onclick="run();">
         <b  class="green" id="run_out2_id" style="float:right; margin-right:1em; margin-top:-1em;"></b><br>
@@ -54,18 +54,23 @@
             
             <script>
                 document.getElementsByTagName('a')[0].onclick = function() {
-                    var text = document.getElementById('run_out_id').innerHTML;
+                    var text = getHTML();
                     var csvData = 'data:application/txt;charset=utf-8,' + encodeURIComponent(text);
                     this.href = csvData;
                     this.target = '_blank';
-                    this.download = 'tree.svg';
+                    this.download = 'tree.html';
                 }
                 run();
                 function run()
                 {
-                    var test = "main(object(thing,being(creature(animal,bird,fish,insect),plant),part,group,stuff,space),concept(action,time,attr,mental,sound";
-                    
-                    var tr = getStringTree(parser(lexer(document.querySelector('code.language-js'),"lex_table.json")[0],"productionsTable.json", false))
+                    var tr = getStringTree(
+                                    parser(
+                                        lexer(
+                                            document.querySelector(
+                                                'code.language-js'),
+                                            "lex_table.json")[0],
+                                        "productionsTable.json",
+                                        false))
                     drawTree(tr);
 
                     function drawTree(t)

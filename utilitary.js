@@ -3,13 +3,13 @@
 */
 function printProductionTable ()
 {
-    var config = getDataFromServer("productionsTable для курсача.json");
+    var config = getDataFromServer("productionsTable.json");
     var out_message = "";
     for (nonterm in config)
     {
         var product = config[nonterm];
         var temp_string = "";
-        temp_string = temp_string + nonterm + ' ::= ';
+        temp_string = temp_string + nonterm.replace(/@(.*)@/, '<$1>') + ' ::= ';
         var temp = [];
         for (needed_term in product)
         {
@@ -19,7 +19,7 @@ function printProductionTable ()
                     temp.push("ε");
             }
             else if (temp_string.indexOf(product[needed_term].join(" "))==-1)
-                temp.push(product[needed_term].join(" "))
+                temp.push(product[needed_term].join(" ").replace(/@(.*?)@/g, '<$1>'))
         }
         temp_string += temp.join(" | ");
         out_message += temp_string + "\n";
@@ -28,14 +28,14 @@ function printProductionTable ()
 }
 
 /****************************************************************************************
-* Распечатать все нетерминалы из файла productionsTable для курсача.json
+* Распечатать все нетерминалы из файла productionsTable.json
 */
 function printNontermsTable()
 {
-    var config = getDataFromServer("productionsTable для курсача.json");
+    var config = getDataFromServer("productionsTable.json");
     var nonterm_arr = [];
     for (nonterm in config)
-        nonterm_arr.push(nonterm);
+        nonterm_arr.push(nonterm.replace(/@(.*)@/, '<$1>'));
 
     console.log(nonterm_arr.join(", "));
 
@@ -91,9 +91,12 @@ function getStringTree(tree)
                 text += node.type;
             else if (typeof(node.body) == "object")
             {
+                if (node.type[0]=='@')
+                    node.type = node.type.replace(/@(.*?)@/g, "<$1>");
                 text += node.type + '(' + recursiveStrTree(node.body[0]);
+                //text += node.type.replace(/@(.*?)@/g, "<$1>") + '(' + recursiveStrTree(node.body[0]);
 
-                if (text == node.type+'(') // если тело пустое
+                if (text == node.type+'(' || node.body == [] || node.body.lenght == 0) // если тело пустое
                     text += "ε";
                 else if (node.body[1])
                 {
@@ -172,4 +175,15 @@ function rewriteDiagonalLines(tree)
         }
     }
     return tree;
+}
+
+// вообще-то было бы клево это вставить в index, но оно не вставляется
+function getHTML() 
+{
+    return '<!DOCTYPE html> <!-- html 5 --> <html lang="en"> <head> <meta charset="UTF-8">'+
+    '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
+    '<meta http-equiv="X-UA-Compatible" content="ie=edge">' +
+    '</head><body><p><center><div id="run_out_id" >'+
+    document.getElementById('run_out_id').innerHTML +
+    "</center></p></body></html>";
 }
