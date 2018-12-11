@@ -28,15 +28,21 @@
                 END;
             END Sqr;
         BEGIN
-            i := 1;
-            1+5;
-            1;
-            ;
-            i := i;
-            i := Sqr(i);
+            i := 4;
             i := Sqr(Sqr(i));
-            Sqr(Sqr(i), 3, puk()) - Sqr(Sqr(i));
-            i:=Sqr(Sqr(i), i);
+            IF (i <= 7 & i > -1) THEN
+                REPEAT
+                    i := ((i+1 * 2)/2);
+                UNTIL (i > Sqr(64));
+            ELSIF (i > 8) THEN
+                i := 8;
+            ELSE
+                i := 0;
+            END
+            CASE i OF 
+                    8: i := 0;
+                   |0: i := 1;
+            END
         END Example.
     </code></pre>
     <a href=#>Скачать svg-файл</a>

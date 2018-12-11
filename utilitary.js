@@ -77,10 +77,10 @@ function getStringTree(tree)
         var text = "";
         if (node !== undefined)
         {
-            if (node.body == [])
-                text += node.type + "(ε)";
-            else if (node.type == '(')
-                text += '❲'; // технически, это не скобка, так что парсер на основе скобок работает корректно
+            // скобки и запятые являются управляющими символами
+            // поэтому заменяем их на похожие, но другие символы
+            if (node.type == '(')
+                text += '❲'; 
             else if (node.type == ')')
                 text += '❳'; 
             else if (node.type == ',')
@@ -93,7 +93,9 @@ function getStringTree(tree)
             {
                 text += node.type + '(' + recursiveStrTree(node.body[0]);
 
-                if (node.body[1])
+                if (text == node.type+'(') // если тело пустое
+                    text += "ε";
+                else if (node.body[1])
                 {
                     for (key in node.body)
                     {
@@ -142,33 +144,6 @@ function getTreeAsText()
 */
 function rewriteDiagonalLines(tree)
 {
-    //var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+" .*\/>/);
-    //match(/<line x1="(\d+)" y1="(\d+)" x2="(\d+)" y2="(\d+)".*?\><\/line>/)
-    /*var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+".*?\><\/line>/g)
-    for (line in linesArray)
-    {
-        if (line != null)
-        {
-            var coordinates = line.match(/"([0-9]+)"/g)
-            if (coordinates != null)
-            {
-                var x1 = coordinates[0];
-                var y1 = coordinates[1];
-                var x2 = coordinates[2];
-                var y2 = coordinates[3];
-                if (x1 != x2)
-                {
-                    // заменить текущую диагональ на две вертикали и одну горизонталь
-                    var y3 = (y1+y2)/2;
-                    var newLine = 
-                    '<line x1="'+ x1 +'" y1="'+ y1 +'" x2="'+ x1 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/></line>'+
-                    '<line x1="'+ x2 +'" y1="'+ y2 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/></line>'+
-                    '<line x1="'+ x1 +'" y1="'+ y3 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/></line>';
-                    tree.replace(line, newLine);
-                }
-            }
-        }
-    }*/
     tree = tree.slice();
     var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+".*?\/\>/g)
     for (line in linesArray)

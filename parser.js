@@ -49,12 +49,13 @@ function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OU
                             "body" : currentToken});
                     }
                 else {
-                    console.log("Ошибка: неожиданный терминал: "  + currentStackSymbol + 
-                    ",хотя должен был быть: " + currentToken);
+                    console.log("Ошибка: неожиданный терминал: "  + currentToken + 
+                    ",хотя должен был быть: " + currentStackSymbol);
                     console.log("Содержимое стека: " + stack);
                     console.log("Остаток массива токенов: " + arrayOfTokens.slice(currentIndex, -1));
 
                     console.log("Текущий индекс: ", currentIndex);
+                    console.log(ast);
                     throw 0;
                 }
             }
@@ -83,13 +84,41 @@ function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OU
                             var newStack = [];
                             while (production.length)
                                 newStack.push(production.pop());
+                            // доделать; по задумке, должно раскрывать тело 
+                            /*
+                            
+                            while (production.length)
+                                newStack.push(production.pop());
+                            if (calledFrom == currentStackSymbol)
+                            {
+                                if (calledFrom == currentStackSymbol) // если узел вложен в узел с таким же именем
+                                {
+                                    localAst.push(startRecursiveParse(newStack, currentStackSymbol)[0])
+                                }
+                            }
+                            else
+                            {
+                                localAst.push({"type" : currentStackSymbol,
+                                            "body" : startRecursiveParse(newStack, currentStackSymbol)});
+                            }
+                            
+                            */
+                            /*if (config[currentStackSymbol]["ADD CHILDREN TO BODY"]) 
+                            {
+                                var inw = startRecursiveParse(newStack);
+                                for (var i in inw)
+                                    localAst.push(inw[i])
 
+                                //localAst.push({"type":currentStackSymbol,"body":inw})    
+                            }
+                            else*/
                             localAst.push({"type" : currentStackSymbol,
-                                            "body" : startRecursiveParse(newStack)});
+                                        "body" : startRecursiveParse(newStack)});
 
                         }
                         else {
                             console.log("Ошибка: неверное правило. Правая часть не является массивом: " + currentStackSymbol + " " + production);
+                            console.log(ast);
                             throw 2;
                         }
                     }
@@ -103,11 +132,13 @@ function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OU
                     }
                     else {                
                         console.log("Ошибка: для сочетания терминала и нетерминала не задано правило: " + currentToken + " " + currentStackSymbol);
+                        console.log(ast);
                         throw 3;
                     }
                 }
                 else {
                     console.log("Ошибка: не удается найти правило для нетерминала: " + currentStackSymbol);
+                    console.log(ast);
                     throw 4;
                 }  
             }
