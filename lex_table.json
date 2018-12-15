@@ -25,7 +25,8 @@
                 "INC", "INCL", "INTEGER", "LEN", "LONG",
                 "LONGINT","LONGREAL", "MAX", "MIN", "NEW", 
                 "ODD", "ORD", "REAL","SET", "SHORT", 
-                "SHORTINT", "SIZE", "TRUE"
+                "SHORTINT", "SIZE", "TRUE",
+                "PRINT", "READ"
             ]
         
     },
