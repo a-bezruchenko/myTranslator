@@ -116,14 +116,19 @@ function getStringTree(tree)
 /****************************************************************************************
 * Упрощенная форма вызова парсера, принимает только флаги
 */
-function parseThis(PRINT_PROCESS_OF_DERIVATION = true, OUTPUT_DERIVATION = false , PRINT_TERMINALS = false, PRINT_EPSILONS = false)
+function parseThis(PRINT_PROCESS_OF_DERIVATION = true,
+     OUTPUT_DERIVATION = false ,
+      PRINT_TERMINALS = false,
+       PRINT_EPSILONS = false,
+       GENERATE_CODE = false)
 {
     return parser(lexer(document.querySelector('code.language-js'),"lex_table.json")[0],
     "productionsTable.json",
      PRINT_PROCESS_OF_DERIVATION,
      OUTPUT_DERIVATION,
      PRINT_TERMINALS,
-     PRINT_EPSILONS);
+     PRINT_EPSILONS,
+     GENERATE_CODE);
 }
 
 /****************************************************************************************
@@ -186,4 +191,9 @@ function getHTML()
     '</head><body><p><center><div id="run_out_id" >'+
     document.getElementById('run_out_id').innerHTML +
     "</center></p></body></html>";
+}
+
+function generateCode()
+{
+    return parseThis(false, false, false, false, true);
 }

@@ -15,13 +15,22 @@ OUTPUT_DERIVATION – если установлено, то на выходе б
 PRINT_TERMINALS – при печати вывода цепочки печатать ли «вывод» терминалов
 
 PRINT_EPSILONS – у нетерминалов, выводящихся «в никуда», ставит эпсилон в правой части правила
+
+GENERATE_CODE – генерировать код вместо дерева
 */
-function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OUTPUT_DERIVATION = false ,PRINT_TERMINALS = false, PRINT_EPSILONS = false)
+function parser(arrayOfTokens, configURL,
+    PRINT_PROCESS_OF_DERIVATION = true,
+    OUTPUT_DERIVATION = false,
+    PRINT_TERMINALS = false,
+    PRINT_EPSILONS = false,
+    GENERATE_CODE = false)
 {
     var config = getDataFromServer(configURL);
     var start = ["@программа@"];
     var currentIndex = 0;
     var output = [];
+    var generatedCode = [];
+
 
     function startRecursiveParse(stack) {
         var currentStackSymbol;
@@ -32,7 +41,26 @@ function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OU
             currentToken = arrayOfTokens[currentIndex];
             currentStackSymbol = stack.pop();
 
-            if (currentStackSymbol[0]!='@') {// если текущий символ – терминал                     
+            if (currentStackSymbol[0] == '$') // текущий символ – действие
+            {
+                var temp = currentStackSymbol.slice(1);
+
+                if (temp == 'id' ||  temp == 'const')
+                {
+                    if (typeof(currentToken)!='object')
+                    {
+                        console.log("Ошибка при генерации кода: ожидался ", temp, ", а было получено ", currentToken)
+                        throw 5;
+                    }
+                    else
+                    {
+                        temp = currentToken[1];
+                    }
+                }
+
+                generatedCode.push(temp);
+            }
+            else if (currentStackSymbol[0] != '@') {// если текущий символ – терминал                     
                 if (currentToken == currentStackSymbol ||
                     currentToken[0] == 'ident' && currentStackSymbol == 'id'||
                     currentToken[0].match(/.*?_const/) && currentStackSymbol == 'const')
@@ -84,34 +112,7 @@ function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OU
                             var newStack = [];
                             while (production.length)
                                 newStack.push(production.pop());
-                            // доделать; по задумке, должно раскрывать тело 
-                            /*
-                            
-                            while (production.length)
-                                newStack.push(production.pop());
-                            if (calledFrom == currentStackSymbol)
-                            {
-                                if (calledFrom == currentStackSymbol) // если узел вложен в узел с таким же именем
-                                {
-                                    localAst.push(startRecursiveParse(newStack, currentStackSymbol)[0])
-                                }
-                            }
-                            else
-                            {
-                                localAst.push({"type" : currentStackSymbol,
-                                            "body" : startRecursiveParse(newStack, currentStackSymbol)});
-                            }
-                            
-                            */
-                            /*if (config[currentStackSymbol]["ADD CHILDREN TO BODY"]) 
-                            {
-                                var inw = startRecursiveParse(newStack);
-                                for (var i in inw)
-                                    localAst.push(inw[i])
 
-                                //localAst.push({"type":currentStackSymbol,"body":inw})    
-                            }
-                            else*/
                             localAst.push({"type" : currentStackSymbol,
                                         "body" : startRecursiveParse(newStack)});
 
@@ -158,7 +159,10 @@ function parser(arrayOfTokens, configURL, PRINT_PROCESS_OF_DERIVATION = true, OU
     if (PRINT_PROCESS_OF_DERIVATION)
         console.log(output.join("\n"));
 
+    if (GENERATE_CODE)
+        return generatedCode.join(" ");
     if (OUTPUT_DERIVATION)
-        return ([ast, output.join("\n")])
-    return ast;
+        return ([ast, output.join("\n")]);
+    else
+        return ast;
 }
