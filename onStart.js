@@ -7,4 +7,7 @@ function start()
 
     console.log(generateCode());
 
+    //document.querySelector('output_code').textContent = generateCode()
+    document.getElementsByClassName('output_code')[0].innerHTML = generateCode();
+    
 }
