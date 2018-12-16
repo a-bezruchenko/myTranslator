@@ -14,39 +14,36 @@
 </head>
 <body>
     <pre><code class="language-js">
+        (* вычислить модуль вектора *)
         MODULE Example;
-        VAR 	i, j:INTEGER;
-        ch:CHAR;
-            PROCEDURE Sqr(n:INTEGER ):INTEGER
-        VAR temp, acc:INTEGER;
+        VAR size, i, sum: INTEGER;
+         ARR: ARRAY 100 OF INTEGER;
+        PROCEDURE Sqr(n:INTEGER ):INTEGER
             BEGIN
-                temp := n;
-                acc := 0;
-                WHILE temp>0 DO
-                    acc:= acc + n;
-                    DEC temp;
-                END;
-                RETURN acc;
+                RETURN n*n;
             END Sqr;
         BEGIN
-            i := 2;
-            i := Sqr(Sqr(i));
-            IF (i <= 7 & i > -1) THEN
-                REPEAT
-                    PRINT (i);  
-                    i := ((i+1 * 2)/2);
-                UNTIL (i > Sqr(64));
-            ELSIF (i > 8) THEN
-                i := 8;
+            READ(size);
+            IF (size < 0 OR size > 100) THEN
+                PRINT("Неправильный размер векторов.")
+            ELSIF (size = 0) THEN
+                PRINT(0);
             ELSE
                 i := 0;
+                sum := 0;
+                PRINT("Введите массив:")
+                WHILE (i < size) DO
+                    READ(ARR[i]);
+                    INC i;
+                END
+                i := i - 1;
+                REPEAT
+                    sum := sum + Sqr(ARR[i]);
+                    DEC i;
+                UNTIL (i < 0);
+                PRINT("Модуль вектора равен:");
+                PRINT(sum);
             END
-            CASE i OF 
-                    8: i := 0;
-                   |0: i := 1;
-            END
-            
-            RETURN i;
         END Example.
     </code></pre>
     <a href=#>Скачать html-файл с деревом</a>

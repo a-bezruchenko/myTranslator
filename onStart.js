@@ -6,4 +6,5 @@ function start()
     true, false, false))
 
     console.log(generateCode());
+
 }
