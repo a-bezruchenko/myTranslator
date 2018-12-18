@@ -1,5 +1,6 @@
-/***************************************************************************************
-По элементу страницы, содержащему код, выдать массив лексем по данной грамматике
+/********************************************************************************
+По конфигурационному файлу с шаблонами лексем и элементу страницы, содержащему текст, выдать массив лексем, идентификаторов и констант
+
 
 elementWithCode – элемент страницы, содержащий код
 
@@ -9,11 +10,8 @@ function lexer(elementWithCode, configURL)
 {
     var codeText = elementWithCode.textContent;
     var config = getDataFromServer(configURL);
-    var tokenList = [];
-    var arrayOfConst = [];
-    var arrayOfIdent = [];
-    var cnstIndex = 0;
-    var idIndex = 0;
+    var output = {tokenList:[], arrayOfConst:[], arrayOfIdent:[]};
+    var indexes = {cnstIndex: 0, idIndex: 0}
     var match;
     var ErrorList = [];
     while (codeText)
@@ -25,7 +23,6 @@ function lexer(elementWithCode, configURL)
             if (match)
             {
                 match = match[0];
-
                 // слово совпало с регуляркой, обрабатываем
                 // если дошли до ключа error, значит, слова нет в словаре
                 if (key === "error")
@@ -64,36 +61,20 @@ function lexer(elementWithCode, configURL)
                         {
                             // добавить match в массив идентификаторов или констант
                             // добавить в массив лексем указатель на match в массиве ид-ов или констант
-                            if (config[key].link == "arrayOfIdent")
+                            if (config[key].link == "arrayOfConst" || config[key].link == "arrayOfIdent")
                             {
-                                if (arrayOfIdent.includes(match))
-                                { // если слово уже есть в массиве, добавляем ссылку на него
-                                    match = [key, arrayOfIdent[arrayOfIdent.indexOf(match)]]
-                                }
-                                else
-                                { // иначе добавляем его в массив и добавляем ссылку на него
-                                    arrayOfIdent.push(match);
-                                    match = [key, arrayOfIdent[idIndex]]
-                                    idIndex++;
-                                }
-                            }
-                            if (config[key].link == "arrayOfConst")
-                            {
-                                if (arrayOfConst.includes(match))
+                                var link = config[key].link;
+                                if (!output[link].includes(match))
                                 {
-                                    match = [key, arrayOfConst[arrayOfConst.indexOf(match)]]
+                                    // иначе добавляем его в массив и добавляем ссылку на него
+                                    output[link].push(match)
+                                    indexes[link]++;
                                 }
-                                else
-                                {
-                                    arrayOfConst.push(match)
-                                    match = [key, arrayOfConst[cnstIndex]]
-                                    cnstIndex++;
-                                }
+                                match = [key, output[link][output[link].indexOf(match)]]
                             }
-                            
                         }
                         // добавить элемент в массив
-                        tokenList.push(match);
+                        output.tokenList.push(match);
                         break;
                     }
                 }
@@ -107,6 +88,6 @@ function lexer(elementWithCode, configURL)
     }
     else
     {
-        return [tokenList, arrayOfIdent, arrayOfConst];
+        return output;
     }
 }

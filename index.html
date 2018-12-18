@@ -28,37 +28,40 @@
     <div style="width:100%; height:1px; clear:both;"></div> <!-- выравниваем без обтекания -->
                 
     <div id="line_block"><pre><code class="language-js">
-    (* вычислить модуль вектора *)
-    MODULE Example;
-    VAR size, i, sum: INTEGER;
-    ARR: ARRAY 100 OF INTEGER;
-    PROCEDURE Sqr(n:INTEGER ):INTEGER
+        (* вычислить модуль вектора *)
+        MODULE Example;
+        VAR size, i, sum: INTEGER;
+        ARR: ARRAY 100 OF INTEGER;
+        PROCEDURE Sqr(n:INTEGER ):INTEGER
+            BEGIN
+                RETURN n*n;
+            END Sqr;
         BEGIN
-            RETURN n*n;
-        END Sqr;
-    BEGIN
-        READ(size);
-        IF (size < 0 OR size > 100) THEN
-            PRINT("Неправильный размер векторов.")
-        ELSIF (size = 0) THEN
-            PRINT(0);
-        ELSE
-            i := 0;
-            sum := 0;
-            PRINT("Введите массив:")
-            WHILE (i < size) DO
-                READ(ARR[i]);
-                INC i;
+            READ(size);
+            IF (size < 0 OR size > 100) THEN
+                PRINT("Неправильный размер векторов.")
+            ELSIF (size = 0) THEN
+                PRINT(0);
+            ELSE
+                i := 0;
+                sum := 0;
+                PRINT("Введите массив:")
+                WHILE (i < size) DO
+                    READ(ARR[i]);
+                    INC i;
+                END
+                i := i - 1;
+                REPEAT
+                    sum := sum + Sqr(ARR[i]);
+                    DEC i;
+                UNTIL (i < 0);
+                PRINT("Модуль вектора равен:");
+                PRINT(sum);
             END
-            i := i - 1;
-            REPEAT
-                sum := sum + Sqr(ARR[i]);
-                DEC i;
-            UNTIL (i < 0);
-            PRINT("Модуль вектора равен:");
-            PRINT(sum);
-        END
-    END Example.
+        END Example.
+    
+
+
     </code></pre></div> 
 
     <div id="line_block">
@@ -87,14 +90,7 @@
                 run();
                 function run()
                 {
-                    var tr = getStringTree(
-                                    parser(
-                                        lexer(
-                                            document.querySelector(
-                                                'code.language-js'),
-                                            "lex_table.json")[0],
-                                        "productionsTable.json",
-                                        false))
+                    var tr = getStringTree(parseThis(false))
                     drawTree(tr);
 
                     function drawTree(t)

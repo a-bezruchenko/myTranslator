@@ -113,39 +113,7 @@ function getStringTree(tree)
     }
 }
 
-/****************************************************************************************
-* Упрощенная форма вызова парсера, принимает только флаги
-*/
-function parseThis(PRINT_PROCESS_OF_DERIVATION = true,
-     OUTPUT_DERIVATION = false ,
-      PRINT_TERMINALS = false,
-       PRINT_EPSILONS = false,
-       GENERATE_CODE = false)
-{
-    return parser(lexer(document.querySelector('code.language-js'),"lex_table.json")[0],
-    "productionsTable.json",
-     PRINT_PROCESS_OF_DERIVATION,
-     OUTPUT_DERIVATION,
-     PRINT_TERMINALS,
-     PRINT_EPSILONS,
-     GENERATE_CODE);
-}
 
-/****************************************************************************************
-* Возвращает строку с процессом вывода данного кода
-*/
-function getDerivation()
-{
-    return parseThis(false, true, false, true)[1].replace(/@(.*?)@/g, "<$1>");
-}
-
-/****************************************************************************************
-* Возвращает код дерева в svg формате
-*/
-function getTreeAsText()
-{
-    return document.getElementById('run_out_id').innerHTML;
-}
 
 /****************************************************************************************
 * превращает все диагональные линии в вертикальные и горизонтальные
@@ -193,7 +161,52 @@ function getHTML()
     "</center></p></body></html>";
 }
 
+
+
+// вернуть массив лексем для заданной программы
+function lexThis(FULL = false)
+{
+    if (FULL)
+        return lexer(document.querySelector('code.language-js'),"lex_table.json");
+    else
+        return lexer(document.querySelector('code.language-js'),"lex_table.json").tokenList;
+}
+
+/****************************************************************************************
+* Упрощенная форма вызова парсера, принимает только флаги
+*/
+function parseThis(PRINT_PROCESS_OF_DERIVATION = true,
+    OUTPUT_DERIVATION = false ,
+     PRINT_TERMINALS = false,
+      PRINT_EPSILONS = false,
+      GENERATE_CODE = false)
+{
+   return parser(lexThis(),
+   "productionsTable.json",
+    PRINT_PROCESS_OF_DERIVATION,
+    OUTPUT_DERIVATION,
+    PRINT_TERMINALS,
+    PRINT_EPSILONS,
+    GENERATE_CODE);
+}
+
 function generateCode()
 {
     return parseThis(false, false, false, false, true);
+}
+
+/****************************************************************************************
+* Возвращает строку с процессом вывода данного кода
+*/
+function getDerivation()
+{
+   return parseThis(false, true, false, true)[1].replace(/@(.*?)@/g, "<$1>");
+}
+
+/****************************************************************************************
+* Возвращает код дерева в svg формате
+*/
+function getTreeAsText()
+{
+   return document.getElementById('run_out_id').innerHTML;
 }

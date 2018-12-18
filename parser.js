@@ -1,5 +1,3 @@
-
-
 /****************************************************************************************
 Построить синтаксическое дерево по массиву токенов и грамматике
 arrayOfTokens - исходная строка
@@ -24,20 +22,35 @@ function parser(arrayOfTokens, configURL,
     GENERATE_CODE = false)
 {
     var config = getDataFromServer(configURL);
-    var start = ["@программа@"];
+    var startStack = ["@программа@"];
     var currentIndex = 0;
     var output = [];
     var generatedCode = [];
 
+    try {
+        var ast = startRecursiveParse(startStack);
+    }
+    catch (error) {
+        ast = error;
+    }
+    if (PRINT_PROCESS_OF_DERIVATION)
+        console.log(output.join("\n"));
 
-    function startRecursiveParse(stack) {
+    if (GENERATE_CODE)
+        return generatedCode.join(" ");
+    if (OUTPUT_DERIVATION)
+        return ([ast, output.join("\n")]);
+    else
+        return ast;
+
+    function startRecursiveParse(expectationStack) {
         var currentStackSymbol;
         var currentToken;
         var localAst = [];
-        while (stack.length) {
+        while (expectationStack.length) {
 
             currentToken = arrayOfTokens[currentIndex];
-            currentStackSymbol = stack.pop();
+            currentStackSymbol = expectationStack.pop();
 
             if (currentStackSymbol[0] == '$') // текущий символ – действие
             {
@@ -51,9 +64,7 @@ function parser(arrayOfTokens, configURL,
                         throw 5;
                     }
                     else
-                    {
                         temp = currentToken[1];
-                    }
                 }
 
                 generatedCode.push(temp);
@@ -77,7 +88,7 @@ function parser(arrayOfTokens, configURL,
                 else {
                     console.log("Ошибка: неожиданный терминал: "  + currentToken + 
                     ",хотя должен был быть: " + currentStackSymbol);
-                    console.log("Содержимое стека: " + stack);
+                    console.log("Содержимое стека: " + expectationStack);
                     console.log("Остаток массива токенов: " + arrayOfTokens.slice(currentIndex, -1));
 
                     console.log("Текущий индекс: ", currentIndex);
@@ -97,9 +108,9 @@ function parser(arrayOfTokens, configURL,
                     {
                         var production = config[currentStackSymbol][currentToken];
                         if (production.length==0 && PRINT_EPSILONS)
-                            output.push(currentStackSymbol + " → ε");
+                            output.push(currentStackSymbol.replace(/@(.*?)@/g,"<$1>") + " → ε");
                         else
-                            output.push(currentStackSymbol + " → " + production.join(" "));
+                            output.push(currentStackSymbol.replace(/@(.*?)@/g,"<$1>") + " → " + production.join(" ").replace(/@(.*?)@/g,"<$1>"));
 
                         if (typeof(production) == 'object') 
                         {
@@ -125,9 +136,9 @@ function parser(arrayOfTokens, configURL,
                             config[currentStackSymbol]["EMPTY PRODUCTIONS"].indexOf(currentToken)!=-1)
                     {
                         if (PRINT_EPSILONS)
-                            output.push(currentStackSymbol + " → ε");
+                            output.push(currentStackSymbol.replace(/@(.*?)@/g,"<$1>") + " → ε");
                         else
-                            output.push(currentStackSymbol + " →   ");
+                            output.push(currentStackSymbol.replace(/@(.*?)@/g,"<$1>") + " →   ");
                     }
                     else {                
                         console.log("Ошибка: для сочетания терминала и нетерминала не задано правило: " + currentToken + " " + currentStackSymbol);
@@ -146,21 +157,5 @@ function parser(arrayOfTokens, configURL,
         return localAst;
     }
 
-    try {
-        if (PRINT_PROCESS_OF_DERIVATION)
-            console.log("Вывод данной цепочки:");
-        var ast = startRecursiveParse(start);
-    }
-    catch (error) {
-        ast = error;
-    }
-    if (PRINT_PROCESS_OF_DERIVATION)
-        console.log(output.join("\n"));
 
-    if (GENERATE_CODE)
-        return generatedCode.join(" ");
-    if (OUTPUT_DERIVATION)
-        return ([ast, output.join("\n")]);
-    else
-        return ast;
 }
