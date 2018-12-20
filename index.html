@@ -39,13 +39,13 @@
         BEGIN
             READ(size);
             IF (size < 0 OR size > 100) THEN
-                PRINT("Неправильный размер векторов.")
+                PRINT("Неправильный размер векторов.");
             ELSIF (size = 0) THEN
                 PRINT(0);
             ELSE
                 i := 0;
                 sum := 0;
-                PRINT("Введите массив:")
+                PRINT("Введите массив:");
                 WHILE (i < size) DO
                     READ(ARR[i]);
                     INC i;

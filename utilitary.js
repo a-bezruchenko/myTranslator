@@ -22,9 +22,10 @@ function printProductionTable ()
                 temp.push(product[needed_term].join(" ").replace(/@(.*?)@/g, '<$1>'))
         }
         temp_string += temp.join(" | ");
+        temp_string.replace(/\n/g, "")
         out_message += temp_string + "\n";
     }
-    console.log(out_message);
+    return (out_message);
 }
 
 /****************************************************************************************
@@ -37,7 +38,7 @@ function printNontermsTable()
     for (nonterm in config)
         nonterm_arr.push(nonterm.replace(/@(.*)@/, '<$1>'));
 
-    console.log(nonterm_arr.join(", "));
+    return (nonterm_arr.join(", "));
 
 }
 
@@ -62,7 +63,7 @@ function printTermsTable()
             }
         }
     }
-    console.log(term_arr.sort().join(" "));
+    return (term_arr.sort().join(" "));
 }
 
 /****************************************************************************************
@@ -116,11 +117,12 @@ function getStringTree(tree)
 
 
 /****************************************************************************************
-* превращает все диагональные линии в вертикальные и горизонтальные
+* превращает все диагональные линии в вертикальные и горизонтальные, изменяет толщину
 */
 function rewriteDiagonalLines(tree)
 {
     tree = tree.slice();
+    const width = 2;
     var linesArray = tree.match(/<line x1="\d+" y1="\d+" x2="\d+" y2="\d+".*?\/\>/g)
     for (line in linesArray)
     {
@@ -139,9 +141,9 @@ function rewriteDiagonalLines(tree)
                     // заменить текущую диагональ на две вертикали и одну горизонталь
                     var y3 = (y1+y2)/2;
                     var newLine = 
-                    '<line x1="'+ x1 +'" y1="'+ y1 +'" x2="'+ x1 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>'+
-                    '<line x1="'+ x2 +'" y1="'+ y2 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>'+
-                    '<line x1="'+ x1 +'" y1="'+ y3 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:1px;"/>';
+                    '<line x1="'+ x1 +'" y1="'+ y1 +'" x2="'+ x1 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:'+width+'px;"/>'+
+                    '<line x1="'+ x2 +'" y1="'+ y2 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:'+width+'px;"/>'+
+                    '<line x1="'+ x1 +'" y1="'+ y3 +'" x2="'+ x2 +'" y2="'+ y3 +'" stroke="black" style="stroke-width:'+width+'px;"/>';
                     tree = tree.replace(linesArray[line], newLine);
                 }
             }
